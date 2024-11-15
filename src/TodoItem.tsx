@@ -1,4 +1,3 @@
-import React from "react";
 import { Todo } from "./types";
 import dayjs from "dayjs";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

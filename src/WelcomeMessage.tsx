@@ -1,5 +1,3 @@
-import React from "react";
-
 // 引数の型を定義
 // Propsという名前で定義することが一般的です。
 type Props = {
