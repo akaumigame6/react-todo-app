@@ -5,6 +5,7 @@ import {
   faFile,
   faClock,
   faFaceGrinWide,
+  faSkull,
 } from "@fortawesome/free-solid-svg-icons";
 import { twMerge } from "tailwind-merge";
 
@@ -33,6 +34,17 @@ const TodoItem = (props: Props) => {
           <FontAwesomeIcon icon={faFaceGrinWide} className="ml-1.5" />
         </div>
       )}
+
+      {todo.deadline != null &&
+        dayjs().isAfter(dayjs(todo.deadline)) &&
+        !todo.isDone && (
+          <div className="mb-1 rounded bg-red-600 px-2 py-0.5 text-center text-xs text-white">
+            <FontAwesomeIcon icon={faSkull} className="mr-1.5" />
+            期限切れ
+            <FontAwesomeIcon icon={faSkull} className="ml-1.5" />
+          </div>
+        )}
+
       <div className="flex items-baseline text-slate-700">
         <FontAwesomeIcon icon={faFile} flip="horizontal" className="mr-1" />
         <div

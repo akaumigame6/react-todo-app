@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import { twMerge } from "tailwind-merge";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
+import Push from "./Push";
 
 const App = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -16,6 +17,7 @@ const App = () => {
   const [newTodoDeadline, setNewTodoDeadline] = useState<Date | null>(null);
   const [newTodoNameError, setNewTodoNameError] = useState("");
   const [initialized, setInitialized] = useState(false);
+  const [sort, setSort] = useState("追加順");
   const localStorageKey = "TodoApp";
 
   // App コンポーネントの初回実行時のみLocalStorageからTodoデータを復元
@@ -33,6 +35,15 @@ const App = () => {
       setTodos(initTodos);
     }
     setInitialized(true);
+    if ("Notification" in window) {
+      // 通知が許可されていたら早期リターン
+      const permission = Notification.permission;
+      if (permission === "denied" || permission === "granted") {
+        return;
+      }
+      // 通知の許可を求める
+      Notification.requestPermission().then(() => new Notification("テスト"));
+    }
   }, []);
 
   // 状態 todos または initialized に変更があったときTodoデータを保存
@@ -79,6 +90,10 @@ const App = () => {
     setTodos(updatedTodos);
   };
 
+  const updateSort = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSort(e.target.value);
+  };
+
   const addNewTodo = () => {
     // ▼▼ 編集
     const err = isValidTodoName(newTodoName);
@@ -111,9 +126,6 @@ const App = () => {
     setTodos(updatedTodos);
   };
 
-  const [count, setCount] = useState(0);
-  const countUp1 = () => setCount(count + 1);
-  const countUp10 = () => setCount(count + 10);
   const num2star = (n: number): string => "★".repeat(4 - n);
 
   return (
@@ -122,7 +134,28 @@ const App = () => {
       <div className="mb-4">
         <WelcomeMessage name="萱島ウサギ" uncompletedCount={uncompletedCount} />
       </div>
-      <TodoList todos={todos} updateIsDone={updateIsDone} remove={remove} />
+      <div className="flex gap-5">
+        <div className="font-bold">リストの並び</div>
+        {["優先順", "期限に近い順", "追加順"].map((value) => (
+          <label key={value} className="flex items-center space-x-1 ">
+            <input
+              id={`sort-${value}`}
+              name="sortGroup"
+              type="radio"
+              value={value}
+              checked={sort === value}
+              onChange={updateSort}
+            />
+            <span>{value}</span>
+          </label>
+        ))}
+      </div>
+      <TodoList
+        sort={sort}
+        todos={todos}
+        updateIsDone={updateIsDone}
+        remove={remove}
+      />
       <button
         type="button"
         onClick={removeCompletedTodos}
@@ -222,29 +255,14 @@ const App = () => {
 
       {/* 追加 */}
       <div className="mb-2">
-        <p>
-          現在のカウント値は
-          <span className="text-xl font-bold text-blue-500"> {count} </span>です
-        </p>
+        <p>push通知のお試しです</p>
       </div>
       <div className="flex space-x-2">
         <button
           className="rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-700"
-          onClick={countUp1}
+          onClick={() => Push({ uncompletedCount })}
         >
-          1 Up
-        </button>
-        <button
-          className="rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-700"
-          onClick={countUp10}
-        >
-          10 Up
-        </button>
-        <button
-          className="rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-700"
-          onClick={() => setCount(count + 100)}
-        >
-          100 Up
+          PUSH
         </button>
       </div>
     </div>
