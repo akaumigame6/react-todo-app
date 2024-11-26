@@ -14,7 +14,9 @@ const App = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodoName, setNewTodoName] = useState("");
   const [newTodoPriority, setNewTodoPriority] = useState(3);
-  const [newTodoDeadline, setNewTodoDeadline] = useState<Date | null>(null);
+  const [newTodoDeadline, setNewTodoDeadline] = useState<Date | undefined>(
+    undefined
+  );
   const [newTodoNameError, setNewTodoNameError] = useState("");
   const [initialized, setInitialized] = useState(false);
   const [sort, setSort] = useState("追加順");
@@ -27,7 +29,7 @@ const App = () => {
       const storedTodos: Todo[] = JSON.parse(todoJsonStr);
       const convertedTodos = storedTodos.map((todo) => ({
         ...todo,
-        deadline: todo.deadline ? new Date(todo.deadline) : null,
+        deadline: todo.deadline ? new Date(todo.deadline) : undefined,
       }));
       setTodos(convertedTodos);
     } else {
@@ -76,7 +78,7 @@ const App = () => {
   const updateDeadline = (e: React.ChangeEvent<HTMLInputElement>) => {
     const dt = e.target.value; // UIで日時が未設定のときは空文字列 "" が dt に格納される
     console.log(`UI操作で日時が "${dt}" (${typeof dt}型) に変更されました。`);
-    setNewTodoDeadline(dt === "" ? null : new Date(dt));
+    setNewTodoDeadline(dt === "" ? undefined : new Date(dt));
   };
 
   const updateIsDone = (id: string, value: boolean) => {
@@ -113,7 +115,7 @@ const App = () => {
     setTodos(updatedTodos); // 作成した配列をtodosにセット
     setNewTodoName("");
     setNewTodoPriority(3);
-    setNewTodoDeadline(null);
+    setNewTodoDeadline(undefined);
   };
 
   const removeCompletedTodos = () => {
