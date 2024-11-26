@@ -16,19 +16,19 @@ const TodoList = (props: Props) => {
         return a.isDone ? 1 : -1;
       }
       if (a.priority === b.priority) {
-        if (a.deadline === null) {
+        if (a.deadline === undefined) {
           return 1;
-        } else if (b.deadline === null) {
+        } else if (b.deadline === undefined) {
           return -1;
         } else return a.priority - b.priority;
       } else return a.priority - b.priority;
     });
   } else if (props.sort === "期限に近い順") {
     let nullDeadline = [...props.todos].filter(
-      (todo) => todo.deadline === null
+      (todo) => todo.deadline === undefined
     );
     let notNullDeadline = [...props.todos].filter(
-      (todo) => todo.deadline !== null
+      (todo) => todo.deadline !== undefined
     );
     nullDeadline = nullDeadline.sort((a, b) => {
       if (a.isDone !== b.isDone) {
@@ -38,7 +38,7 @@ const TodoList = (props: Props) => {
     notNullDeadline = notNullDeadline.sort((a, b) => {
       if (a.isDone !== b.isDone) {
         return a.isDone ? 1 : -1;
-      } else if (a.deadline !== null && b.deadline !== null) {
+      } else if (a.deadline !== undefined && b.deadline !== undefined) {
         return a.deadline.getTime() - b.deadline.getTime();
       } else return a.priority - b.priority;
     });
