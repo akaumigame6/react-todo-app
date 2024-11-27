@@ -1,20 +1,12 @@
 import { useState, useEffect } from "react";
 import { Todo } from "./types";
-import { initTodos } from "./initTodos";
 import WelcomeMessage from "./WelcomeMessage";
 import TodoList from "./TodoList";
 import Modal from "./Modal";
-import { v4 as uuid } from "uuid";
 import Push from "./Push";
 
 const App = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [newTodoName, setNewTodoName] = useState("");
-  const [newTodoPriority, setNewTodoPriority] = useState(3);
-  const [newTodoDeadline, setNewTodoDeadline] = useState<Date | undefined>(
-    undefined
-  );
-  const [newTodoNameError, setNewTodoNameError] = useState("");
   const [initialized, setInitialized] = useState(false);
   const [sort, setSort] = useState("追加順");
   const localStorageKey = "TodoApp";
@@ -58,30 +50,6 @@ const App = () => {
 
   const uncompletedCount = todos.filter((todo: Todo) => !todo.isDone).length;
 
-  const isValidTodoName = (name: string): string => {
-    if (name.length < 2 || name.length > 32) {
-      return "2文字以上、32文字以内で入力してください";
-    } else {
-      return "";
-    }
-  };
-
-  const updateNewTodoName = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // あとでバリデーションなどの処理をここに追加する
-    setNewTodoNameError(isValidTodoName(e.target.value)); // ◀◀ 追加
-    setNewTodoName(e.target.value);
-  };
-
-  const updateNewTodoPriority = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewTodoPriority(Number(e.target.value)); // 数値型に変換
-  };
-
-  const updateDeadline = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const dt = e.target.value; // UIで日時が未設定のときは空文字列 "" が dt に格納される
-    console.log(`UI操作で日時が "${dt}" (${typeof dt}型) に変更されました。`);
-    setNewTodoDeadline(dt === "" ? undefined : new Date(dt));
-  };
-
   const updateIsDone = (id: string, value: boolean) => {
     const updatedTodos = todos.map((todo) => {
       if (todo.id === id) {
@@ -97,30 +65,6 @@ const App = () => {
     setSort(e.target.value);
   };
 
-  const addNewTodo = () => {
-    // ▼▼ 編集
-    const err = isValidTodoName(newTodoName);
-    if (err !== "") {
-      setNewTodoNameError(err);
-      return;
-    }
-    const newTodo: Todo = {
-      id: uuid(),
-      name: newTodoName,
-      isDone: false,
-      priority: newTodoPriority,
-      deadline: newTodoDeadline,
-    };
-    // スプレッド構文を使って、末尾に新タスクを追加した配列を作成
-    const updatedTodos = [...todos, newTodo];
-    setTodos(updatedTodos); // 作成した配列をtodosにセット
-    setNewTodoName("");
-    setNewTodoPriority(3);
-    setNewTodoDeadline(undefined);
-    toggleModal();
-    setEditingTodo(undefined);
-  };
-
   const removeCompletedTodos = () => {
     const updatedTodos = todos.filter((todo) => !todo.isDone);
     setTodos(updatedTodos);
@@ -130,8 +74,6 @@ const App = () => {
     const updatedTodos = todos.filter((todo) => todo.id !== id);
     setTodos(updatedTodos);
   };
-
-  const num2star = (n: number): string => "★".repeat(4 - n);
 
   const handleEditTodo = (todo: Todo) => {
     setEditingTodo(todo);
