@@ -5,10 +5,6 @@ import WelcomeMessage from "./WelcomeMessage";
 import TodoList from "./TodoList";
 import Modal from "./Modal";
 import { v4 as uuid } from "uuid";
-import dayjs from "dayjs";
-import { twMerge } from "tailwind-merge";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import Push from "./Push";
 
 const App = () => {
@@ -40,9 +36,6 @@ const App = () => {
         deadline: todo.deadline ? new Date(todo.deadline) : undefined,
       }));
       setTodos(convertedTodos);
-    } else {
-      // LocalStorage にデータがない場合は initTodos をセットする
-      setTodos(initTodos);
     }
     setInitialized(true);
     if ("Notification" in window) {
@@ -185,93 +178,15 @@ const App = () => {
       >
         完了済みのタスクを削除
       </button>
-
-      {/* タスク追加関連のUI実装 ここから... */}
-      <div className="mt-5 space-y-2 rounded-md border p-3">
-        <h2 className="text-lg font-bold">新しいタスクの追加</h2>
-        {/* 編集: ここから... */}
-        <div>
-          <div className="flex items-center space-x-2">
-            <label className="font-bold" htmlFor="newTodoName">
-              名前
-            </label>
-            <input
-              id="newTodoName"
-              type="text"
-              value={newTodoName}
-              onChange={updateNewTodoName}
-              className={twMerge(
-                "grow rounded-md border p-2",
-                newTodoNameError && "border-red-500 outline-red-500"
-              )}
-              placeholder="2文字以上、32文字以内で入力してください"
-            />
-          </div>
-          {newTodoNameError && (
-            <div className="ml-10 flex items-center space-x-1 text-sm font-bold text-red-500 ">
-              <FontAwesomeIcon
-                icon={faTriangleExclamation}
-                className="mr-0.5"
-              />
-              <div>{newTodoNameError}</div>
-            </div>
-          )}
-        </div>
-        {/* ...ここまで */}
-
-        {/* ラジオボタンの実装 ここから... */}
-        <div className="flex gap-5">
-          <div className="font-bold">優先度</div>
-          {[1, 2, 3].map((value) => (
-            <label
-              key={value}
-              className="flex items-center space-x-1 text-yellow-500"
-            >
-              <input
-                id={`priority-${value}`}
-                name="priorityGroup"
-                type="radio"
-                value={value}
-                checked={newTodoPriority === value}
-                onChange={updateNewTodoPriority}
-              />
-              <span>{num2star(value)}</span>
-            </label>
-          ))}
-        </div>
-        {/* ...ここまで */}
-
-        {/* DateTimeUIの実装 ここから... */}
-        <div className="flex items-center gap-x-2">
-          <label htmlFor="deadline" className="font-bold">
-            期限
-          </label>
-          <input
-            type="datetime-local"
-            id="deadline"
-            value={
-              newTodoDeadline
-                ? dayjs(newTodoDeadline).format("YYYY-MM-DDTHH:mm:ss")
-                : ""
-            }
-            onChange={updateDeadline}
-            className="rounded-md border border-gray-400 px-2 py-0.5"
-          />
-        </div>
-        {/* ...ここまで */}
-
-        <button
-          type="button"
-          onClick={addNewTodo} // ボタンを押下したときの処理
-          className={twMerge(
-            "rounded-md bg-indigo-500 px-3 py-1 font-bold text-white hover:bg-indigo-600",
-            newTodoNameError && "cursor-not-allowed opacity-50"
-          )}
-        >
-          追加
-        </button>
-      </div>
-      {/* ...ここまで */}
+      <button
+        type="button"
+        onClick={toggleModal}
+        className={
+          " ml-2 mt-5 rounded-md bg-indigo-500 px-3 py-1 font-bold text-white hover:bg-indigo-600"
+        }
+      >
+        新しいタスクの追加
+      </button>
 
       <Modal
         isOpen={isModalOpen}
@@ -285,7 +200,7 @@ const App = () => {
       ></Modal>
 
       {/* 追加 */}
-      <div className="mb-2">
+      <div className="mb-2 mt-10">
         <p>push通知のお試しです</p>
       </div>
       <div className="flex space-x-2">
