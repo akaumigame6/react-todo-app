@@ -15,10 +15,19 @@ type Props = {
   todo: Todo;
   updateIsDone: (id: string, value: boolean) => void;
   remove: (id: string) => void;
+  isModalOpen: boolean;
+  toggleModal: () => void;
+  onEdit: (todo: Todo) => void;
 };
 
 const TodoItem = (props: Props) => {
   const todo = props.todo;
+
+  const pushEdit = (todo: Todo) => {
+    props.onEdit(todo);
+    props.toggleModal();
+  };
+
   return (
     <div
       key={todo.id}
@@ -64,12 +73,20 @@ const TodoItem = (props: Props) => {
         </div>
         <div className="ml-2">優先度 </div>
         <div className="ml-2 text-orange-400">{num2star(todo.priority)}</div>
-        <button
-          onClick={() => props.remove(todo.id)}
-          className="ml-auto rounded-md bg-slate-200 px-2 py-1 text-sm font-bold text-white hover:bg-red-500"
-        >
-          削除
-        </button>
+        <div className="ml-auto">
+          <button
+            onClick={() => pushEdit(todo)}
+            className=" mr-2 rounded-md bg-slate-200 px-2 py-1 text-sm font-bold text-white hover:bg-slate-500"
+          >
+            設定
+          </button>
+          <button
+            onClick={() => props.remove(todo.id)}
+            className=" rounded-md bg-slate-200 px-2 py-1 text-sm font-bold text-white hover:bg-red-500"
+          >
+            削除
+          </button>
+        </div>
       </div>
       {todo.deadline && (
         <div className="ml-4 flex items-center text-sm text-slate-500">

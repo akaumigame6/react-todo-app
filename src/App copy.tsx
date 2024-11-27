@@ -24,7 +24,6 @@ const App = () => {
   const localStorageKey = "TodoApp";
 
   const [isModalOpen, setModalOpen] = useState(false);
-  const [editingTodo, setEditingTodo] = useState<Todo | undefined>(undefined);
 
   const toggleModal = () => {
     setModalOpen(!isModalOpen);
@@ -125,7 +124,6 @@ const App = () => {
     setNewTodoPriority(3);
     setNewTodoDeadline(undefined);
     toggleModal();
-    setEditingTodo(undefined);
   };
 
   const removeCompletedTodos = () => {
@@ -139,11 +137,6 @@ const App = () => {
   };
 
   const num2star = (n: number): string => "★".repeat(4 - n);
-
-  const handleEditTodo = (todo: Todo) => {
-    setEditingTodo(todo);
-    setModalOpen(true); // モーダルを表示
-  };
 
   return (
     <div className="mx-4 mt-10 max-w-2xl md:mx-auto">
@@ -174,7 +167,6 @@ const App = () => {
         remove={remove}
         isModalOpen={isModalOpen}
         toggleModal={toggleModal}
-        onEdit={handleEditTodo}
       />
       <button
         type="button"
@@ -273,16 +265,102 @@ const App = () => {
       </div>
       {/* ...ここまで */}
 
-      <Modal
-        isOpen={isModalOpen}
-        onClose={toggleModal}
-        todos={todos}
-        setTodos={setTodos}
-        isModalOpen={isModalOpen}
-        setModalOpen={setModalOpen}
-        editingTodo={editingTodo}
-        setEditingTodo={setEditingTodo}
-      ></Modal>
+      <Modal isOpen={isModalOpen} onClose={toggleModal}>
+        <div>
+          <h2 className="text-lg font-bold">新しいタスクの追加</h2>
+          {/* 編集: ここから... */}
+          <div>
+            <div className="mt-2 flex items-center space-x-2">
+              <label className="font-bold" htmlFor="newTodoName">
+                名前
+              </label>
+              <input
+                id="newTodoName"
+                type="text"
+                value={newTodoName}
+                onChange={updateNewTodoName}
+                className={twMerge(
+                  "grow rounded-md border p-2",
+                  newTodoNameError && "border-red-500 outline-red-500"
+                )}
+                placeholder="2文字以上、32文字以内で入力してください"
+              />
+            </div>
+            {newTodoNameError && (
+              <div className="ml-10 flex items-center space-x-1 text-sm font-bold text-red-500 ">
+                <FontAwesomeIcon
+                  icon={faTriangleExclamation}
+                  className="mr-0.5"
+                />
+                <div>{newTodoNameError}</div>
+              </div>
+            )}
+          </div>
+          {/* ...ここまで */}
+
+          {/* ラジオボタンの実装 ここから... */}
+          <div className="mt-2 flex gap-5">
+            <div className="font-bold">優先度</div>
+            {[1, 2, 3].map((value) => (
+              <label
+                key={value}
+                className="flex items-center space-x-1 text-yellow-500"
+              >
+                <input
+                  id={`priority-${value}`}
+                  name="priorityGroup"
+                  type="radio"
+                  value={value}
+                  checked={newTodoPriority === value}
+                  onChange={updateNewTodoPriority}
+                />
+                <span>{num2star(value)}</span>
+              </label>
+            ))}
+          </div>
+          {/* ...ここまで */}
+
+          {/* DateTimeUIの実装 ここから... */}
+          <div className="mt-2 flex items-center gap-x-2 ">
+            <label htmlFor="deadline" className="font-bold">
+              期限
+            </label>
+            <input
+              type="datetime-local"
+              id="deadline"
+              value={
+                newTodoDeadline
+                  ? dayjs(newTodoDeadline).format("YYYY-MM-DDTHH:mm:ss")
+                  : ""
+              }
+              onChange={updateDeadline}
+              className="rounded-md border border-gray-400 px-2 py-0.5"
+            />
+          </div>
+          {/* ...ここまで */}
+          <div className="ml-auto mt-2">
+            <button
+              type="button"
+              onClick={addNewTodo} // ボタンを押下したときの処理
+              className={twMerge(
+                "mr-2 rounded-md bg-indigo-500 px-3 py-1 font-bold text-white hover:bg-indigo-600",
+                newTodoNameError && "cursor-not-allowed opacity-50"
+              )}
+            >
+              追加
+            </button>
+            <button
+              onClick={toggleModal}
+              className={twMerge(
+                "rounded-md bg-slate-500 px-3 py-1 font-bold text-white hover:bg-slate-600",
+                newTodoNameError && "cursor-not-allowed opacity-50"
+              )}
+            >
+              閉じる
+            </button>
+          </div>
+        </div>
+      </Modal>
 
       {/* 追加 */}
       <div className="mb-2">

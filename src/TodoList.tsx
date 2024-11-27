@@ -6,6 +6,9 @@ type Props = {
   todos: Todo[];
   updateIsDone: (id: string, value: boolean) => void;
   remove: (id: string) => void;
+  isModalOpen: boolean;
+  toggleModal: () => void;
+  onEdit: (todo: Todo) => void;
 };
 
 const TodoList = (props: Props) => {
@@ -64,6 +67,9 @@ const TodoList = (props: Props) => {
           todo={todo}
           remove={props.remove}
           updateIsDone={props.updateIsDone}
+          isModalOpen={props.isModalOpen}
+          toggleModal={props.toggleModal}
+          onEdit={props.onEdit}
         />
       ))}
     </div>
