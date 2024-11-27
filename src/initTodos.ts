@@ -14,7 +14,7 @@ export const initTodos: Todo[] = [
     name: "TypeScriptの勉強 (復習)",
     isDone: true,
     priority: 3,
-    deadline: null, // このTodoには期限を設定しない
+    deadline: undefined, // このTodoには期限を設定しない
   },
   {
     id: uuid(),
