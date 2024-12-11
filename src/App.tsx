@@ -17,6 +17,9 @@ const App = () => {
   const toggleModal = () => {
     setModalOpen(!isModalOpen);
   };
+  const NewTodo = () => {
+    setEditingTodo(undefined);
+  };
 
   // App コンポーネントの初回実行時のみLocalStorageからTodoデータを復元
   useEffect(() => {
@@ -122,7 +125,10 @@ const App = () => {
       </button>
       <button
         type="button"
-        onClick={toggleModal}
+        onClick={() => {
+          toggleModal();
+          NewTodo();
+        }}
         className={
           " ml-2 mt-5 rounded-md bg-indigo-500 px-3 py-1 font-bold text-white hover:bg-indigo-600"
         }
